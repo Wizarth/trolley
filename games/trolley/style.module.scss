@@ -1,0 +1,16 @@
+.board {
+  border: solid 1px black;
+}
+
+.teamList {
+  display: flex;
+  flex-direction: row;
+}
+
+.team {
+  width: 33%;
+}
+
+.teamPicker {
+  width: 33%;
+}

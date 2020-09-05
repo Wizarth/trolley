@@ -1,0 +1,26 @@
+@use "sass:color"
+@import "../../styles/board.module.sass"
+
+.board
+  border: solid 1px black
+
+.teamListArea
+  $base-color: darkRed
+  @include board-area($base-color)
+  // Is there a good way to detect if the base color is "dark" and lighten/darken respectively?
+  color: color.scale($base-color, $lightness: 90%)
+
+  .teamListElements
+    $elements-color: color.scale($base-color, $lightness: 10%)
+    @include board-area($elements-color)
+    display: flex
+    flex-direction: row
+
+.otherArea
+  @include board-area(blue)
+
+.team
+  width: 33%
+
+.teamPicker
+  width: 33%

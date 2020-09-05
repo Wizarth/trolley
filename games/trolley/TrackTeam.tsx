@@ -1,6 +1,7 @@
 import React from 'react';
 import {TrackTeam as TrackTeamT} from './types';
-import style from './style.module.scss'
+import style from './style.module.sass'
+import BoardArea from '../../components/BoardArea';
 
 type ParamsT = {
 	team: TrackTeamT;
@@ -30,11 +31,11 @@ export default function TrackTeam( {team, teamId, name, playerId, onJoinTeam}: P
 	}
 
 	return (
-		<div key="team-{team}" className={style.team}>
+		<BoardArea key="team-{team}" className={style.team} styles={style}>
 			<h2>{name} Team</h2>
 			<h3>Players:</h3>
 			<ul>{playerNames}</ul>
 			{button}
-		</div>
+		</BoardArea>
 	);
 };

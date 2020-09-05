@@ -1,4 +1,4 @@
-import styles from './style.module.scss'
+import styles from './style.module.sass'
 
 import React from 'react';
 import TeamPicker from './TeamPicker';

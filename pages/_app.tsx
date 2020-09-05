@@ -22,8 +22,11 @@ const TrolleyGameClient = Client({
 
 const App = () => (
 	<div>
+		<h1>Player 0</h1>
 		<TrolleyGameClient playerID="0"/>
+		<h1>Player 1</h1>
 		<TrolleyGameClient playerID="1"/>
+		<h1>Player 2</h1>
 		<TrolleyGameClient playerID="2"/>
 	</div>
 );

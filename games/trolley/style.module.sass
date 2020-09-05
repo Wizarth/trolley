@@ -7,11 +7,10 @@
 .teamListArea
   $base-color: darkRed
   @include board-area($base-color)
-  // Is there a good way to detect if the base color is "dark" and lighten/darken respectively?
-  color: color.scale($base-color, $lightness: 90%)
+  color: contrast($base-color, 90%)
 
   .teamListElements
-    $elements-color: color.scale($base-color, $lightness: 10%)
+    $elements-color: contrast($base-color, 10%)
     @include board-area($elements-color)
     display: flex
     flex-direction: row

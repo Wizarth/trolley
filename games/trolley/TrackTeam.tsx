@@ -31,7 +31,7 @@ export default function TrackTeam( {team, teamId, name, playerId, onJoinTeam}: P
 	}
 
 	return (
-		<BoardArea key="team-{team}" className={style.team} styles={style}>
+		<BoardArea className={style.team} styles={style}>
 			<h2>{name} Team</h2>
 			<h3>Players:</h3>
 			<ul>{playerNames}</ul>

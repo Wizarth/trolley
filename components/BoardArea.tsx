@@ -1,7 +1,12 @@
+interface BoardAreaStyles {
+  readonly innerBorder: string;
+  readonly outerBorder: string;
+}
+
 type ParamsT = {
   children: JSX.Element[]|JSX.Element;
   className: string;
-  styles: {[x: string]: string};
+  styles: BoardAreaStyles;
 }
 
 export default function BoardArea({

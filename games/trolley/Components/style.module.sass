@@ -1,5 +1,5 @@
 @use "sass:color"
-@import "../../styles/board.module.sass"
+@import "../../../styles/board.module.sass"
 
 .board
   border: solid 1px black
@@ -9,7 +9,18 @@
   @include board-area($base-color)
   color: contrast($base-color, 90%)
 
-  .teamListElements
+  .listElements
+    $elements-color: contrast($base-color, 10%)
+    @include board-area($elements-color)
+    display: flex
+    flex-direction: row
+
+.roleListArea
+  $base-color: lightBlue
+  @include board-area($base-color)
+  color: contrast($base-color, 90%)
+
+  .listElements
     $elements-color: contrast($base-color, 10%)
     @include board-area($elements-color)
     display: flex
@@ -19,6 +30,9 @@
   @include board-area(blue)
 
 .team
+  width: 33%
+
+.role
   width: 33%
 
 .teamPicker

@@ -3,46 +3,66 @@ import { Game, Ctx } from 'boardgame.io';
 
 import { State, Player } from './trolley/types';
 
+import * as PickTeam from './trolley/Logic/Setup/pickTeam'
+import * as PickRole from './trolley/Logic/Setup/pickRole';
+import innocentCards from './trolley/Logic/Decks/innocent';
+import guiltyCards from './trolley/Logic/Decks/guilty';
+import modifierCards from './trolley/Logic/Decks/modifier';
+import * as Main from './trolley/Logic/main';
+
 export const TrolleyGame : Game = {
 	name: 'TrolleyGame',
 	setup: (ctx) : State => {
+		if(!ctx.random) {
+			throw new Error('ctx.random missing');
+		}
 		const numPlayers = ctx.numPlayers;
 		// Populate the players field based on the number of players
-		const players: Record<string, Player> = {};
+		const players: State["players"] = {};
 		for( let i = 0; i < numPlayers; ++i ) {
 			players[""+i] = {
 				name: null,
 				score: 0,
-				choseTeam: false,
-				teamsDone: false
+				team: null,
+				innocentHand: null,
+				guiltyHand: null,
+				modifierHand: null,
+				teamsDone: false,
+				rolesDone: false
 			};
 		}
 		return {
 			secret: {
 				decks: {
-					goodies: [],
-					baddies: [],
-					modifiers: []
+					innocent: ctx.random.Shuffle(innocentCards),
+					guilty: ctx.random.Shuffle(guiltyCards),
+					modifier: ctx.random.Shuffle(modifierCards)
 				}
 			},
 			players,
 			teams: {
-				top: {
+				north: {
 					players: [],
-					goodies: [],
-					baddies: [],
-					modifiers: []
+					roles: {
+						innocent: null,
+						guilty: null,
+						modifier: []
+					}
 				},
-				bottom: {
+				south: {
 					players: [],
-					goodies: [],
-					baddies: [],
-					modifiers: []
+					roles: {
+						innocent: null,
+						guilty: null,
+						modifier: []
+					}
 				},
-				trolley: {
+				conductor: {
 					player: null
 				}
-			}
+			},
+			northTrack: [],
+			southTrack: []
 		};
 	},
 	// TODO: minPlayers isn't doc'ed in Game, it's Lobby plugin specific?
@@ -51,80 +71,31 @@ export const TrolleyGame : Game = {
 	phases: {
 		setup: {
 			start: true,
-			onBegin: (G: State, ctx: Ctx) => {
-				ctx.events.setActivePlayers({all: 'pickTeam'});
-			},
 			turn: {
+				activePlayers: {
+					all: 'pickTeam'
+				},
 				stages: {
 					pickTeam: {
 						moves: {
-							chooseTeam: (G: State, ctx: Ctx, teamId: string) => {
-								// Remove the player from all teams
-								G.teams.top.players = G.teams.top.players.filter(
-									(player: string) => player !== ctx.playerID
-								);
-								G.teams.bottom.players = G.teams.bottom.players.filter(
-									(player: string) => player !== ctx.playerID
-								);
-								if( G.teams.trolley.player === ctx.playerID ) {
-									G.teams.trolley.player = null;
-								}
-								// Add the player to the specified team
-								if( teamId === 'top' || teamId === 'bottom') {
-									G.teams[teamId].players.push(ctx.playerID);
-								} else {
-									G.teams[teamId].player = ctx.playerID;
-								}
-								G.players[ctx.playerID].choseTeam = true;
-								G.players[ctx.playerID].teamsDone = false;
-							},
-							toggleDone: (G: State, ctx: Ctx) => {
-								if(!G.players[ctx.playerID].choseTeam) {
-									return INVALID_MOVE;
-								}
-								G.players[ctx.playerID].teamsDone = !G.players[ctx.playerID].teamsDone;
-
-								for(let i = 0; i < ctx.numPlayers; ++i) {
-									if(!G.players[""+i].teamsDone) {
-										return;
-									}
-								}
-								if(G.teams.top.players.length === 0 ) {
-									return;
-								}
-								if(G.teams.bottom.players.length === 0 ) {
-									return;
-								}
-								if(G.teams.trolley.player === null ) {
-									return;
-								}
-								// Only players on track teams go to pick role.
-								// Trolley player is all set
-								const value = {};
-								for(let i = 0 ; i < G.teams.top.players.length; ++i ) {
-									value[G.teams.top.players[i]] = 'pickRole';
-								}
-								for(let i = 0 ; i < G.teams.bottom.players.length; ++i ) {
-									value[G.teams.bottom.players[i]] = 'pickRole';
-								}
-								ctx.events.setActivePlayers({value});
-							}
+							chooseTeam: PickTeam.chooseTeam,
+							toggleDone: PickTeam.toggleDone
 						}
 					},
 					pickRole: {
 						moves: {
-							joinRole: (G, ctx, roleId) => {
-							},
-							leaveRole: (G, ctx, roleId) => {
-							},
-							done: (G, ctx) => {
-								// TODO: Don't allow to end the stage until all roles are filled
-								ctx.events.endStage();
-							}
+							joinRole: PickRole.joinRole,
+							leaveRole: PickRole.leaveRole,
+							toggleDone: PickRole.toggleDone
 						}
 					}
 				}
-			}
+			},
+			endIf: PickRole.endIf,
+			next: 'main'
+		},
+		main: {
+			onBegin: Main.onBegin
 		}
 	}
 	// Disable for development

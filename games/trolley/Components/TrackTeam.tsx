@@ -8,7 +8,7 @@ type ParamsT = {
 	teamId: keyof StateTeams;
 	name: string;
 	playerId: string;
-	onJoinTeam: (teamId: string) => void;
+	onJoinTeam: (teamId: keyof StateTeams) => void;
 }
 
 export default function TrackTeam( {team, teamId, name, playerId, onJoinTeam}: ParamsT ) {
@@ -21,7 +21,7 @@ export default function TrackTeam( {team, teamId, name, playerId, onJoinTeam}: P
 		);
 	}
 
-	let button: JSX.Element;
+	let button: JSX.Element|null;
 
 	if( team.players.indexOf(playerId) === -1 ) {
 		// Player not in team

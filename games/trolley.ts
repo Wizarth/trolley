@@ -1,14 +1,15 @@
 import { PlayerView, INVALID_MOVE } from 'boardgame.io/core';
 import { Game, Ctx } from 'boardgame.io';
 
-import { State, Player } from './trolley/types';
+import { State, Card, SetupData} from './trolley/types';
 
 import * as PickTeam from './trolley/Logic/Setup/pickTeam'
 import * as PickRole from './trolley/Logic/Setup/pickRole';
-import innocentCards from './trolley/Logic/Decks/innocent';
-import guiltyCards from './trolley/Logic/Decks/guilty';
-import modifierCards from './trolley/Logic/Decks/modifier';
 import * as Main from './trolley/Logic/main';
+
+import guilty from './trolley/Logic/Decks/guilty.json';
+import innocent from './trolley/Logic/Decks/innocent.json';
+import modifier from './trolley/Logic/Decks/modifier.json';
 
 export const TrolleyGame : Game = {
 	name: 'TrolleyGame',
@@ -31,12 +32,13 @@ export const TrolleyGame : Game = {
 				rolesDone: false
 			};
 		}
+
 		return {
 			secret: {
 				decks: {
-					innocent: ctx.random.Shuffle(innocentCards),
-					guilty: ctx.random.Shuffle(guiltyCards),
-					modifier: ctx.random.Shuffle(modifierCards)
+					innocent: ctx.random.Shuffle(innocent),
+					guilty: ctx.random.Shuffle(guilty),
+					modifier: ctx.random.Shuffle(modifier)
 				}
 			},
 			players,
@@ -66,7 +68,8 @@ export const TrolleyGame : Game = {
 		};
 	},
 	// TODO: minPlayers isn't doc'ed in Game, it's Lobby plugin specific?
-	// minPlayers: 3,
+	minPlayers: 3,
+	maxPlayers: 16,
 	turn: { moveLimit: 1 },
 	phases: {
 		setup: {

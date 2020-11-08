@@ -37,7 +37,7 @@ const TrolleyGameBoard: FunctionComponent<BoardProps<State>> = (
 		switch( ctx.activePlayers[playerID] ) {
 			case 'pickTeam':
 				elementList.push(
-					<TeamPicker
+					<TeamPicker key="teamPicker"
 						teams={G.teams}
 						player={interactingPlayer}
 						playerId={playerID}
@@ -50,7 +50,7 @@ const TrolleyGameBoard: FunctionComponent<BoardProps<State>> = (
 				const curTeam = interactingPlayer.team;
 				if(curTeam === "north" || curTeam === "south") {
 					elementList.push(
-						<RolePicker
+						<RolePicker key="rolePicker"
 							team={G.teams[curTeam]}
 							player={interactingPlayer}
 							onJoinRole={moves.joinRole}
@@ -62,12 +62,12 @@ const TrolleyGameBoard: FunctionComponent<BoardProps<State>> = (
 				break;
 			default:
 				elementList.push(
-					<h1>Please wait...</h1>
+					<h1 key="wait">Please wait for other players...</h1>
 				);
 		}
 	}
 	elementList.push(
-		<div>Board goes here</div>
+		<div key="board">Board goes here</div>
 	)
 	return (
 		<div className={styles.board}>

@@ -1,45 +1,32 @@
 import { Lobby } from 'boardgame.io/react';
-import React from 'react';
+import React, {FunctionComponent, Suspense, useState, useEffect} from 'react';
+import Spinner from 'react-spinner';
+
 import { TrolleyGame } from '../games/trolley';
 import { TrolleyGameBoard } from '../games/trolley/Board';
 
-interface State {
-  server: string|null;
-}
+const Index: FunctionComponent<void> = () => {
+  const [server, setServer] = useState<string|null>(null);
 
-class Index extends React.Component<{}, State> {
-  constructor(props: {}) {
-    super(props);
-
-    this.state = {
-      server: null
-    }
-  }
-
-  componentDidMount() {
+  useEffect(() => {
     const { protocol, hostname, port } = window.location;
     const server = `${protocol}//${hostname}:${port}`;
 
-    this.setState({server});
-  }
+    setServer(server);
+  }, []);
 
-  render() {
-    if(!this.state.server)
-    {
-      return (<h1>Connecting...</h1>);
-    }
-    /*
-
-    */
+  if(!server) {
+    return (<Spinner/>);
+  } else {
     const importedGames = [{ game: TrolleyGame, board: TrolleyGameBoard }];
 
     return (
       <div>
         <h1>Lobby</h1>
-        <Lobby gameServer={this.state.server} lobbyServer={this.state.server} gameComponents={importedGames} debug={true}/>
+        <Lobby gameServer={server} lobbyServer={server} gameComponents={importedGames} debug={true}/>
       </div>
     )
   }
-};
+}
 
 export default Index;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {FunctionComponent} from 'react';
 import {TrolleyTeam as TrolleyTeamT, StateTeams} from '../types';
 import style from './style.module.sass';
 import BoardArea from '../../../components/BoardArea';
@@ -11,29 +11,33 @@ type ParamsT = {
 	onJoinTeam: (teamId: keyof StateTeams) => void;
 }
 
-export default function TrolleyTeam( {team, playerId, onJoinTeam}: ParamsT ){
-	let playerName: JSX.Element;
-	let button: JSX.Element;
-
-	let warning: JSX.Element;
+const TrolleyTeam: FunctionComponent<ParamsT> = ( {team, playerId, onJoinTeam} ) => {
+	const elements: JSX.Element[] = [
+		<h2 key='h2'>Conductor</h2>,
+		<h3 key='h3'>Player:</h3>
+	]
 	if( team.player === null ) {
-		playerName = <div><i>None</i></div>
-		warning = <div>"Conductor needs a player!"</div>;
+		elements.push(
+			<div key='player'><i>None</i></div>
+		);
 	} else {
-		playerName = <div><span>{team.player}</span></div>
+		elements.push(<div key='player'><span>{team.player}</span></div>);
 	}
 	if( team.player !== playerId) {
 		// Player not in team
-		button = <button onClick={()=>onJoinTeam('conductor')}>Join</button>
+		elements.push(<button key='join' onClick={()=>onJoinTeam('conductor')}>Join</button>);
+	}
+	if( team.player === null ) {
+		elements.push(
+			<div key='warning'>"Conductor needs a player!"</div>
+		);
 	}
 
 	return (
 		<BoardArea className={style.team} styles={style}>
-			<h2>Conductor</h2>
-			<h3>Player:</h3>
-			{playerName}
-			{button}
-			{warning}
+			{elements}
 		</BoardArea>
 	);
 };
+
+export default TrolleyTeam

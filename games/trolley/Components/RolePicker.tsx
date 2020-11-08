@@ -71,7 +71,7 @@ export default function RolePicker({team, player, onJoinRole, onLeaveRole, onDon
   );
   let buttonDisabled = false;
 
-  let innocentWarning: JSX.Element|void;
+  let innocentWarning: JSX.Element|undefined;
   if(!team.roles.innocent ) {
     innocentWarning = <span>Role requires a player</span>
     buttonDisabled = true;
@@ -105,25 +105,25 @@ export default function RolePicker({team, player, onJoinRole, onLeaveRole, onDon
             <form>
               {innocentList}
             </form>
-            {innocentWarning}
+            <>{innocentWarning}</>
           </BoardArea>
           <BoardArea className={styles.role} styles={styles}>
             <h2>Guilty</h2>
             <form>
               {guiltyList}
             </form>
-            {guiltyWarning}
+            <>{guiltyWarning}</>
           </BoardArea>
           <BoardArea className={styles.role} styles={styles}>
             <h2>Modifier</h2>
             <form>
               {modifierList}
             </form>
-            {modifierWarning}
+            <>{modifierWarning}</>
           </BoardArea>
         </div>
       </BoardArea>
-      <button disabled={buttonDisabled} onClick={onDone}>{buttonLabel}</button>
+      <button disabled={buttonDisabled} onClick={()=>onDone()}>{buttonLabel}</button>
     </div>
   )
 }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {FunctionComponent} from 'react';
 import {TrackTeam as TrackTeamT, StateTeams} from '../types';
 import style from './style.module.sass'
 import BoardArea from '../../../components/BoardArea';
@@ -11,37 +11,37 @@ type ParamsT = {
 	onJoinTeam: (teamId: keyof StateTeams) => void;
 }
 
-export default function TrackTeam( {team, teamId, name, playerId, onJoinTeam}: ParamsT ) {
+const TrackTeam: FunctionComponent<ParamsT> = ( {team, teamId, name, playerId, onJoinTeam} ) => {
 	let playerNames = team.players.map(
 		(player) => <li key={player}>{player}</li>
 	);
+
+	const elements: JSX.Element[] = [
+		<h2 key="h2">{name} Team</h2>,
+		<h3 key="h3">Players:</h3>,
+		<ul key="playerList">{playerNames}</ul>
+	]
 	if( playerNames.length === 0 ) {
 		playerNames.push(
 			<li key='none'><i>None</i></li>
 		);
 	}
 
-	let button: JSX.Element|null;
-
 	if( team.players.indexOf(playerId) === -1 ) {
 		// Player not in team
-		button = <button onClick={()=>onJoinTeam(teamId)}>Join</button>
-	} else {
-		button = null;
+		elements.push(<button key="join" onClick={()=>onJoinTeam(teamId)}>Join</button>);
 	}
 
-	let warning: JSX.Element;
 	if( team.players.length === 0 ) {
-		warning = <div>"{name} needs at least one player!"</div>;
+		elements.push(<div key="warning">"{name} needs at least one player!"</div>);
 	}
 
 	return (
 		<BoardArea className={style.team} styles={style}>
-			<h2>{name} Team</h2>
-			<h3>Players:</h3>
-			<ul>{playerNames}</ul>
-			{button}
-			{warning}
+			{elements}
+
 		</BoardArea>
 	);
 };
+
+export default TrackTeam;

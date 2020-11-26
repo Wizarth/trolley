@@ -1,7 +1,7 @@
 import { PlayerView, INVALID_MOVE } from 'boardgame.io/core';
-import { Game, Ctx } from 'boardgame.io';
+import { Game } from 'boardgame.io';
 
-import { State, Card, SetupData} from './trolley/types';
+import { State} from './trolley/types';
 
 import * as PickTeam from './trolley/Logic/Setup/pickTeam'
 import * as PickRole from './trolley/Logic/Setup/pickRole';
@@ -11,8 +11,14 @@ import guilty from './trolley/Logic/Decks/guilty.json';
 import innocent from './trolley/Logic/Decks/innocent.json';
 import modifier from './trolley/Logic/Decks/modifier.json';
 
-export const TrolleyGame : Game = {
-	name: 'TrolleyGame',
+// TODO: minPlayers isn't doc'ed in Game, it's Lobby plugin specific?
+interface LobbyGame extends Game {
+	minPlayers: number;
+	maxPlayers: number;
+}
+
+export const TrolleyGame : LobbyGame = {
+	name: 'TrialByTrolley',
 	setup: (ctx) : State => {
 		if(!ctx.random) {
 			throw new Error('ctx.random missing');
@@ -67,7 +73,6 @@ export const TrolleyGame : Game = {
 			southTrack: []
 		};
 	},
-	// TODO: minPlayers isn't doc'ed in Game, it's Lobby plugin specific?
 	minPlayers: 3,
 	maxPlayers: 16,
 	turn: { moveLimit: 1 },
@@ -100,7 +105,7 @@ export const TrolleyGame : Game = {
 		main: {
 			onBegin: Main.onBegin
 		}
-	}
+	},
 	// Disable for development
 	// TODO: Replace with something that only strips hand from players
 	// playerView: PlayerView.STRIP_SECRETS

@@ -1,5 +1,5 @@
 import { Lobby } from 'boardgame.io/react';
-import React, {FunctionComponent, Suspense, useState, useEffect} from 'react';
+import React, {FunctionComponent, useState, useEffect} from 'react';
 import Spinner from 'react-spinner';
 
 import { TrolleyGame } from '../games/trolley';

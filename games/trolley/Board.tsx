@@ -22,11 +22,6 @@ const TrolleyGameBoard: FunctionComponent<BoardProps<State>> = (
 	if(playerID === null) {
 		throw new Error("playerID null");
 	}
-	if(ctx.activePlayers === null ) {
-		// This happens when leaving a phase?
-		// throw new Error("activePlayers null")
-		return null;
-	}
 	const interactingPlayer = G.players[playerID];
 	if(!interactingPlayer) {
 		throw new Error("interacting player null");
@@ -34,6 +29,9 @@ const TrolleyGameBoard: FunctionComponent<BoardProps<State>> = (
 
 	let elementList: JSX.Element[] = [];
 	if( ctx.phase === 'setup' ){
+		if( ctx.activePlayers === null ) {
+			throw new Error("in setup phase and activePlayers null");
+		}
 		switch( ctx.activePlayers[playerID] ) {
 			case 'pickTeam':
 				elementList.push(
@@ -67,7 +65,9 @@ const TrolleyGameBoard: FunctionComponent<BoardProps<State>> = (
 		}
 	}
 	elementList.push(
-		<div key="board">Board goes here</div>
+		<div key="board">
+			<img src='/trolley/board.png' alt='Trolley tracks' />
+		</div>
 	)
 	return (
 		<div className={styles.board}>

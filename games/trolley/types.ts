@@ -1,11 +1,45 @@
-// Cribbed from Boardgame.io
-type PlayerID = string;
+import {Ctx as BaseCtx} from 'boardgame.io';
+import {BoardProps as BaseBoardProps} from 'boardgame.io/react';
+
+export type PlayerID = keyof Players;
+
+export interface Ctx extends Omit<BaseCtx, 'playerID'> {
+  playerID: PlayerID;
+}
+
+export interface BoardProps<T> extends Omit<BaseBoardProps<T>, 'playerID'> {
+  playerID: PlayerID;
+  ctx: Ctx;
+}
+
+/* There's always a minimum of 3 players.
+  I can't work out a way to clarify that this is somehow based on the number of players,
+  so I'm going to say they all exist, and assume we won't be silly
+
+  }
+*/
+export interface Players extends Iterable<Player> {
+  '0': Player;
+  '1': Player;
+  '2': Player;
+  '3': Player;
+  '4': Player;
+  '5': Player;
+  '6': Player;
+  '7': Player;
+  '8': Player;
+  '9': Player;
+  '10': Player;
+  '11': Player;
+  '12': Player;
+  '13': Player;
+  '14': Player;
+  '15': Player;
+}
 
 export interface State {
   secret?: StateSecrets;
-  // The below type declaration implies there's a Player for ANY key.
-  // This is true as long as a player ID is used to look it up
-  players: Record<PlayerID,Player>;
+  players: Players;
   teams: StateTeams;
   northTrack: Card[];
   southTrack: Card[];
@@ -41,7 +75,7 @@ export interface StateTeams {
 export interface TrackTeamRoles {
   innocent: PlayerID|null;
   guilty: PlayerID|null;
-  modifier: string[];
+  modifier: PlayerID[];
 }
 
 export interface TrackTeam {

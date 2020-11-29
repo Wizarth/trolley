@@ -1,41 +1,40 @@
 import * as path from 'path';
-import {readdir, PathLike, writeFile} from 'fs'
+import {readdir, PathLike, writeFile} from 'fs';
 
-import { Card } from '../games/trolley/types';
-
+import {Card} from '../games/trolley/types';
 
 function readdirAsync(dirPath: PathLike): Promise<string[]> {
   return new Promise<string[]>((resolve, reject) => {
     readdir(dirPath, (err, files) => {
-      if(err) {
+      if (err) {
         return reject(err);
       }
       resolve(files);
-    })
-  })
+    });
+  });
 }
 
 function writeFileAsync(path: string, data: string) : Promise<void> {
   return new Promise<void>((resolve, reject) => {
     writeFile(path, data, (err) => {
-      if(err) {
+      if (err) {
         return reject(err);
       }
       resolve();
-    })
-  })
+    });
+  });
 }
 
 function convertToDeck(files: string[]): Card[] {
   files.filter(
-    (fileName) => fileName.toLowerCase().endsWith('.png')
-  )
+      (fileName) => fileName.toLowerCase().endsWith('.png'),
+  );
   return files.map(
-    (fileName) => {
-      const text = path.basename(fileName, '.png');
-      return {text};
-    }
-  )
+      (fileName) => {
+        const text = path.basename(fileName, '.png');
+        return {text};
+      },
+  );
 }
 
 async function main() {
@@ -45,9 +44,9 @@ async function main() {
   const innocentPath = path.join(decksPath, 'innocent');
   const modifierPath = path.join(decksPath, 'modifier');
 
-  const guiltyFiles  = await readdirAsync(guiltyPath);
-  const innocentFiles  = await readdirAsync(innocentPath);
-  const modifierFiles  = await readdirAsync(modifierPath);
+  const guiltyFiles = await readdirAsync(guiltyPath);
+  const innocentFiles = await readdirAsync(innocentPath);
+  const modifierFiles = await readdirAsync(modifierPath);
 
   const guiltyDeck = convertToDeck(guiltyFiles);
   const innocentDeck = convertToDeck(innocentFiles);
@@ -57,13 +56,13 @@ async function main() {
 
   const jsonPath = path.join(process.cwd(), 'games', 'trolley', 'Logic', 'Decks');
   await writeFileAsync(path.join(jsonPath, 'guilty.json'), JSON.stringify(
-    guiltyDeck
+      guiltyDeck,
   ));
   await writeFileAsync(path.join(jsonPath, 'innocent.json'), JSON.stringify(
-    innocentDeck
+      innocentDeck,
   ));
   await writeFileAsync(path.join(jsonPath, 'modifier.json'), JSON.stringify(
-    modifierDeck
+      modifierDeck,
   ));
 }
 main();

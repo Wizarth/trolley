@@ -1,3 +1,4 @@
+import React from 'react';
 import BoardArea from '../../../components/BoardArea';
 import styles from './style.module.sass';
 import {Player, TrackTeam, TrackTeamRoles} from '../types';
@@ -8,92 +9,92 @@ type ParamsT = {
   player: Player;
   onJoinRole: RoleEvent;
   onLeaveRole: RoleEvent;
-	onDone: () => void;
+  onDone: () => void;
 }
 
-/** Helper to convert onchange to join/leave */
+/* Helper to convert onchange to join/leave */
 function onChange(
-  event: React.ChangeEvent<HTMLInputElement>,
-  role: keyof TrackTeamRoles,
-  onJoin: RoleEvent,
-  onLeave: RoleEvent
+    event: React.ChangeEvent<HTMLInputElement>,
+    role: keyof TrackTeamRoles,
+    onJoin: RoleEvent,
+    onLeave: RoleEvent,
 ) {
-  if(event.target.checked) {
+  if (event.target.checked) {
     onJoin(role);
   } else {
-    onLeave(role)
+    onLeave(role);
   }
 }
 
 function generateModifierList(team:TrackTeam, onJoinRole: RoleEvent, onLeaveRole: RoleEvent) {
   return team.players.map(
-    (playerId) => <span>
+      (playerId) => <span key={playerId}>
         <input type="checkbox"
           name={playerId}
           checked={team.roles.modifier.indexOf(playerId) !== -1}
           onChange={(event) => onChange(event, 'modifier', onJoinRole, onLeaveRole)}
-          />
+        />
         <label>{playerId}</label>
-      </span>
-  )
+      </span>,
+  );
 }
 
-function generateRadioList(team:TrackTeam, role: "innocent"|"guilty", onJoinRole: RoleEvent, onLeaveRole: RoleEvent) {
+function generateRadioList(team:TrackTeam, role: 'innocent'|'guilty', onJoinRole: RoleEvent, onLeaveRole: RoleEvent) {
   return team.players.map(
-    (playerId) => <span>
+      (playerId) => <span key='playerId'>
         <input type="radio"
           name={role}
           checked={team.roles[role] === playerId}
           onChange={(event) => onChange(event, role, onJoinRole, onLeaveRole)}
-          />
+        />
         <label>{playerId}</label>
-      </span>
-  )
+      </span>,
+  );
 }
 
 export default function RolePicker({team, player, onJoinRole, onLeaveRole, onDone} : ParamsT) {
   const innocentList = generateRadioList(
-    team,
-    "innocent",
-    onJoinRole,
-    onLeaveRole
+      team,
+      'innocent',
+      onJoinRole,
+      onLeaveRole,
   );
   const guiltyList = generateRadioList(
-    team,
-    "guilty",
-    onJoinRole,
-    onLeaveRole
+      team,
+      'guilty',
+      onJoinRole,
+      onLeaveRole,
   );
   const modifierList = generateModifierList(
-    team,
-    onJoinRole,
-    onLeaveRole
+      team,
+      onJoinRole,
+      onLeaveRole,
   );
   let buttonDisabled = false;
 
   let innocentWarning: JSX.Element|undefined;
-  if(!team.roles.innocent ) {
-    innocentWarning = <span>Role requires a player</span>
+  if (!team.roles.innocent ) {
+    innocentWarning = <span>Role requires a player</span>;
     buttonDisabled = true;
   }
   let guiltyWarning: JSX.Element|void;
-  if(!team.roles.guilty ) {
-    guiltyWarning = <span>Role requires a player</span>
+  if (!team.roles.guilty ) {
+    guiltyWarning = <span>Role requires a player</span>;
     buttonDisabled = true;
   }
   let modifierWarning: JSX.Element|void;
-  if(team.roles.modifier.length === 0 ) {
-    modifierWarning = <span>Role requires at least one player</span>
+  if (team.roles.modifier.length === 0 ) {
+    modifierWarning = <span>Role requires at least one player</span>;
     buttonDisabled = true;
   }
 
-  let buttonLabel = "Ready";
-  if(player.rolesDone) {
-    buttonLabel += "!";
+  let buttonLabel = 'Ready';
+  if (player.rolesDone) {
+    buttonLabel += '!';
   } else {
-    buttonLabel += "?";
+    buttonLabel += '?';
   }
-  <button disabled={buttonDisabled} onClick={onDone}>{buttonLabel}</button>
+  <button disabled={buttonDisabled} onClick={onDone}>{buttonLabel}</button>;
 
   return (
     <div>
@@ -125,5 +126,5 @@ export default function RolePicker({team, player, onJoinRole, onLeaveRole, onDon
       </BoardArea>
       <button disabled={buttonDisabled} onClick={()=>onDone()}>{buttonLabel}</button>
     </div>
-  )
+  );
 }

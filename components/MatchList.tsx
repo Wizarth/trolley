@@ -1,16 +1,16 @@
+import React from 'react';
 import type {FunctionComponent} from 'react';
 import {useState, useContext} from 'react';
-import type { LobbyAPI } from 'boardgame.io';
-import useSWR, {mutate} from 'swr'
+import type {LobbyAPI} from 'boardgame.io';
+import useSWR, {mutate} from 'swr';
 import {useCookies} from 'react-cookie';
-import Link from 'next/link'
-import { useRouter } from 'next/router'
+import {useRouter} from 'next/router';
 import {UserNameContext} from './UserName';
 
 import Spinner from 'react-spinner';
-import Select, {ValueType} from 'react-select';
+import Select from 'react-select';
 
-const fetcher = (arg: RequestInfo, init?: RequestInit) => fetch(arg, init).then(res => res.json());
+const fetcher = (arg: RequestInfo, init?: RequestInit) => fetch(arg, init).then((res) => res.json());
 
 interface MatchProps {
   match: LobbyAPI.Match;
@@ -31,20 +31,20 @@ const Match: FunctionComponent<MatchProps> = ({match}) => {
     let playerID:number;
 
     let currentPlayer = match.players.find(
-      (player) => player.name === userName
+        (player) => player.name === userName,
     );
-    if(currentPlayer) {
-      if( !cookies.credentials) {
+    if (currentPlayer) {
+      if ( !cookies.credentials) {
         throw new Error('Name clash but no credentials cookie');
       }
 
       playerID = currentPlayer.id;
     } else {
       currentPlayer = match.players.find(
-        (player) => player.name === undefined
+          (player) => player.name === undefined,
       );
 
-      if(!currentPlayer) {
+      if (!currentPlayer) {
         throw new Error('No available slot');
       }
 
@@ -54,12 +54,12 @@ const Match: FunctionComponent<MatchProps> = ({match}) => {
         method: 'POST',
         body: JSON.stringify({
           playerID,
-          playerName: userName
+          playerName: userName,
         }),
-        headers: { 'Content-Type': 'application/json' }
+        headers: {'Content-Type': 'application/json'},
       });
 
-      if(!response.ok) {
+      if (!response.ok) {
         throw new Error(response.statusText);
       }
 
@@ -73,20 +73,20 @@ const Match: FunctionComponent<MatchProps> = ({match}) => {
     setCookies('playerID', playerID);
 
     router.push(`/${match.gameName}/${match.matchID}`);
-  }
+  };
 
   return (
     <div>
       <h2>{match.gameName}</h2>
       <ul>
         {match.players.map(
-          ({id, name}) => <li key={id}>{name?name:<i>Available</i>}</li>
+            ({id, name}) => <li key={id}>{name?name:<i>Available</i>}</li>,
         )}
       </ul>
       <button onClick={onJoin}>Join</button>
     </div>
-  )
-}
+  );
+};
 
 
 interface MatchListProps {
@@ -96,27 +96,27 @@ interface MatchListProps {
 export const MatchList: FunctionComponent<MatchListProps> = ({gameName}) => {
   const {data, error} = useSWR<LobbyAPI.MatchList>(`/games/${gameName}`, fetcher, {refreshInterval: 1000} );
 
-  if (error) return <div>failed to load</div>
-  if (!data) return <Spinner/>
+  if (error) return <div>failed to load</div>;
+  if (!data) return <Spinner/>;
 
   const {matches} = data;
 
   let matchesList: JSX.Element;
-  if( matches.length ) {
+  if ( matches.length ) {
     matchesList = <ul>
       {
         matches.filter(({unlisted})=>!unlisted).map(
-          (match, index) => <Match match={match} key={index} />
+            (match, index) => <Match match={match} key={index} />,
         )
       }
-    </ul>
+    </ul>;
   } else {
-    matchesList = <span>No games</span>
+    matchesList = <span>No games</span>;
   }
   return (<>
     {matchesList}
-  </>)
-}
+  </>);
+};
 
 interface MatchCreatorProps {
   gameName: string;
@@ -134,9 +134,9 @@ export const MatchCreator: FunctionComponent<MatchCreatorProps> = ({gameName, mi
   }
 
   const options: NumPlayerOption[] = [];
-  for( let i = minPlayers; i <= maxPlayers; ++i ) {
+  for ( let i = minPlayers; i <= maxPlayers; ++i ) {
     options.push({
-      value: i, label: i
+      value: i, label: i,
     });
   }
 
@@ -146,19 +146,19 @@ export const MatchCreator: FunctionComponent<MatchCreatorProps> = ({gameName, mi
     await fetch(`/games/${gameName}/create`, {
       method: 'post',
       body: JSON.stringify({numPlayers: numPlayers.value}),
-      headers: { 'Content-Type': 'application/json' }
+      headers: {'Content-Type': 'application/json'},
     });
     mutate(`/games/${gameName}`);
   };
 
-  const handleChange: Select<NumPlayerOption>["onChange"] = (value) => {
+  const handleChange: Select<NumPlayerOption>['onChange'] = (value) => {
     // No value selected - should be impossible, but?
-    if(!value) return;
+    if (!value) return;
     // Multiple values selected - should be impossible, but?
-    if(value instanceof Array) return;
+    if (value instanceof Array) return;
 
     setNumPlayers(value);
-  }
+  };
 
   return (
     <form onSubmit={(event)=>event.preventDefault()}>
@@ -166,5 +166,5 @@ export const MatchCreator: FunctionComponent<MatchCreatorProps> = ({gameName, mi
       <Select<NumPlayerOption> options={options} value={numPlayers} onChange={handleChange}/>
       <button onClick={createMatch}>Create</button>
     </form>
-  )
-}
+  );
+};

@@ -1,6 +1,7 @@
+import React from 'react';
 import type {FunctionComponent} from 'react';
 
-import {UserNameContext, useUserName, UserName} from '../../components/UserName'
+import {UserNameContext, useUserName, UserName} from '../../components/UserName';
 import {MatchList, MatchCreator} from '../../components/MatchList';
 
 import {TrolleyGame} from '../../games/trolley';
@@ -8,7 +9,7 @@ import {TrolleyGame} from '../../games/trolley';
 const name = TrolleyGame.name!;
 const {
   minPlayers,
-  maxPlayers
+  maxPlayers,
 } = TrolleyGame;
 
 const TrolleyGameIndexPage: FunctionComponent = () => {
@@ -22,7 +23,7 @@ const TrolleyGameIndexPage: FunctionComponent = () => {
       <h1>Create match</h1>
       <MatchCreator gameName={name} minPlayers={minPlayers} maxPlayers={maxPlayers} />
     </UserNameContext.Provider>
-  )
-}
+  );
+};
 
 export default TrolleyGameIndexPage;

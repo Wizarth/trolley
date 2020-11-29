@@ -1,10 +1,10 @@
-import Router from "@koa/router";
-import next from "next";
+import Router from '@koa/router';
+import next from 'next';
 
-const port = parseInt(process.env.PORT || "0", 10) || 3000
-const dev = process.env.NODE_ENV !== 'production'
-const app = next({ dev })
-const handle = app.getRequestHandler()
+const port = parseInt(process.env.PORT || '0', 10) || 3000;
+const dev = process.env.NODE_ENV !== 'production';
+const app = next({dev});
+const handle = app.getRequestHandler();
 
 import {Server} from 'boardgame.io/server';
 import {TrolleyGame} from '../games/trolley';
@@ -17,8 +17,9 @@ app.prepare().then(() => {
     This looks like we lose some features though - but it looks like that's
     if we use app.render, which we don't.
   */
+  // eslint-disable-next-line new-cap
   const gameServer = Server({
-    games: [TrolleyGame]
+    games: [TrolleyGame],
   });
 
   const server = gameServer.app;
@@ -26,12 +27,12 @@ app.prepare().then(() => {
 
   gameServer.run(port, () => {
     router.all(/.*/, async (ctx) => {
-      await handle(ctx.req, ctx.res)
-      ctx.respond = false
-    })
+      await handle(ctx.req, ctx.res);
+      ctx.respond = false;
+    });
 
-    server.use(router.routes())
+    server.use(router.routes());
 
-    console.log(`> Ready on http://localhost:${port}`)
-  })
-})
+    console.log(`> Ready on http://localhost:${port}`);
+  });
+});

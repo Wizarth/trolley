@@ -1,3 +1,5 @@
+import React from 'react';
+
 interface BoardAreaStyles {
   readonly innerBorder: string;
   readonly outerBorder: string;
@@ -12,7 +14,7 @@ type ParamsT = {
 export default function BoardArea({
   children,
   className,
-  styles
+  styles,
 }: ParamsT) {
   return (
     <div className={className}>
@@ -22,5 +24,5 @@ export default function BoardArea({
         </div>
       </div>
     </div>
-  )
+  );
 }

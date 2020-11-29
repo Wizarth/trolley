@@ -2,7 +2,8 @@ import React from 'react';
 import type {FunctionComponent} from 'react';
 import {useState, useContext} from 'react';
 import type {LobbyAPI} from 'boardgame.io';
-import useSWR, {mutate} from 'swr';
+import {mutate} from 'swr';
+import useJSONSWR from '../modules/jsonSWR';
 import {useCookies} from 'react-cookie';
 import {useRouter} from 'next/router';
 import {UserNameContext} from './UserName';
@@ -10,7 +11,6 @@ import {UserNameContext} from './UserName';
 import Spinner from 'react-spinner';
 import Select from 'react-select';
 
-const fetcher = (arg: RequestInfo, init?: RequestInit) => fetch(arg, init).then((res) => res.json());
 
 interface MatchProps {
   match: LobbyAPI.Match;
@@ -90,7 +90,7 @@ interface MatchListProps {
 }
 
 export const MatchList: FunctionComponent<MatchListProps> = ({gameName}) => {
-  const {data, error} = useSWR<LobbyAPI.MatchList>(`/games/${gameName}`, fetcher, {refreshInterval: 1000} );
+  const {data, error} = useJSONSWR<LobbyAPI.MatchList>(`/games/${gameName}`, {refreshInterval: 1000} );
 
   if (error) return <div>failed to load</div>;
   if (!data) return <Spinner/>;

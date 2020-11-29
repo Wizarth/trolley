@@ -2,36 +2,35 @@ import React from 'react';
 import type {FunctionComponent} from 'react';
 import Spinner from 'react-spinner';
 import {useCookies} from 'react-cookie';
+import type {GetServerSideProps} from 'next';
 import {useRouter} from 'next/router';
-
 import {Client} from 'boardgame.io/react';
 import {SocketIO} from 'boardgame.io/multiplayer';
 
 import {TrolleyGame} from '../../games/trolley';
 import {TrolleyGameBoard} from '../../games/trolley/Board';
+import {getGame} from '../../modules/games';
 
-const TrolleyGamePage: FunctionComponent = () => {
+const TrolleyGamePage: FunctionComponent<{notFound:boolean}> = ({notFound}) => {
   // All use* hooks at the start to ensure goodness
   const router = useRouter();
   const [cookies] = useCookies(['playerID, credentials']);
-
   const {matchID} = router.query;
-  // Also: playerID, credentials - Pull these from cookies so players sharing the match don't mangle
 
   // Blank during SSR
-  if (!matchID) {
+  if (!matchID || notFound) {
     return <Spinner />;
   }
   if (matchID instanceof Array) {
     throw new Error('matchID not specified');
   }
 
-  // TODO: Validate the game exists.
-
   const {playerID, credentials} = cookies;
   if (!playerID || !credentials) {
     // TODO: Display enough of the lobby to join appropriately, but only showing this match
-    throw new Error('Invalid cookies');
+    // throw new Error('Invalid cookies');
+    // SSR requires:
+    return <Spinner />;
   }
 
   // eslint-disable-next-line new-cap
@@ -48,3 +47,37 @@ const TrolleyGamePage: FunctionComponent = () => {
 };
 
 export default TrolleyGamePage;
+
+const getServerSideProps: GetServerSideProps = async ({params}) => {
+  if (!params) {
+    return {
+      props: {
+        notFound: true,
+      },
+    };
+  }
+  const matchID = params.matchID;
+  if (!matchID || matchID instanceof Array) {
+    return {
+      props: {
+        notFound: true,
+      },
+    };
+  }
+
+  if (! await getGame('TrolleyGame', matchID)) {
+    return {
+      props: {
+        notFound: true,
+      },
+    };
+  }
+
+  return {
+    props: {
+      notFound: false,
+    },
+  };
+};
+
+export {getServerSideProps};

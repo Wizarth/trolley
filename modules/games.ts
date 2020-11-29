@@ -21,9 +21,12 @@ export async function getMatches(gameName: string): Promise<MatchProps[]> {
   return matches;
 }
 
-export async function getGame(gameName: string, matchID: string): Promise<MatchProps> {
+export async function getGame(gameName: string, matchID: string): Promise<MatchProps|null> {
   // TODO: Fetch the game data using params.matchID
   const response = await fetch(`http://localhost:3000/games/${gameName}/${matchID}`);
+  if (!response.ok || response.status === 404 ) {
+    return null;
+  }
   const game = await response.json() as MatchProps;
 
   console.log(JSON.stringify(game));

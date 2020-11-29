@@ -10,22 +10,19 @@ import {Server} from 'boardgame.io/server';
 import {TrolleyGame} from '../games/trolley';
 
 app.prepare().then(() => {
-  // TODO: Insert boardgame.io server here, attached to the server Koa object
+  /* To get next.js and the boadgame.io server running together,
+    we start the boardgame.io server, then attach next.js's handle
+    middleware to the koa router.
+    https://nextjs.org/docs/advanced-features/custom-server
+    This looks like we lose some features though - but it looks like that's
+    if we use app.render, which we don't.
+  */
   const gameServer = Server({
     games: [TrolleyGame]
   });
 
   const server = gameServer.app;
-  const router = new Router()
-
-
-
-  /*
-  server.use(async (ctx, next) => {
-    ctx.res.statusCode = 200
-    await next()
-  })
-  */
+  const router: Router = gameServer.router;
 
   gameServer.run(port, () => {
     router.all(/.*/, async (ctx) => {

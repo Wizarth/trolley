@@ -16,10 +16,6 @@ interface MatchProps {
   match: LobbyAPI.Match;
 }
 const Match: FunctionComponent<MatchProps> = ({match}) => {
-  // TODO: Join is more complex than this. Send a POST to /games/{match.gameName}/join
-  // Requires playerID & playerName
-  // Returns playerCredentials, which will be needed to actually access the game
-
   const [cookies, setCookies] = useCookies(['playerID, credentials']);
   const router = useRouter();
   const {userName} = useContext(UserNameContext);

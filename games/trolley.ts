@@ -2,7 +2,7 @@
 import {PlayerView, INVALID_MOVE} from 'boardgame.io/core';
 import {Game} from 'boardgame.io';
 
-import {State, PlayerID} from './trolley/types';
+import {State, Ctx, PlayerID} from './trolley/types';
 
 import * as PickTeam from './trolley/Logic/Setup/pickTeam';
 import * as PickRole from './trolley/Logic/Setup/pickRole';
@@ -13,7 +13,8 @@ import innocent from './trolley/Logic/Decks/innocent.json';
 import modifier from './trolley/Logic/Decks/modifier.json';
 
 // TODO: minPlayers isn't doc'ed in Game, it's Lobby plugin specific?
-interface LobbyGame extends Game {
+// Provide our overridden Ctx to get improved playerID property.
+interface LobbyGame extends Game<any, Ctx> {
   minPlayers: number;
   maxPlayers: number;
 }

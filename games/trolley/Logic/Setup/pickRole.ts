@@ -1,6 +1,6 @@
 import {PhaseConfig} from 'boardgame.io';
 import {INVALID_MOVE} from 'boardgame.io/core';
-import {State, TrackTeam, TrackTeamRoles, Ctx} from '../../types';
+import {State, TrackTeam, TrackTeamRoles, Ctx, PlayerID} from '../../types';
 
 export function joinRole(G: State, ctx: Ctx, roleId: keyof TrackTeamRoles) {
   const curTeam = G.players[
@@ -14,20 +14,20 @@ export function joinRole(G: State, ctx: Ctx, roleId: keyof TrackTeamRoles) {
 
   switch (roleId) {
     case 'innocent':
-      team.roles.innocent = ctx.playerID!;
+      team.roles.innocent = ctx.playerID;
       break;
     case 'guilty':
-      team.roles.guilty = ctx.playerID!;
+      team.roles.guilty = ctx.playerID;
       break;
     case 'modifier':
-      team.roles.modifier.push(ctx.playerID!);
+      team.roles.modifier.push(ctx.playerID);
   }
 }
 
 export function leaveRole(G: State, ctx: Ctx, roleId: keyof TrackTeamRoles) {
   const curTeam = G.players[
       ctx.playerID
-  ]!.team;
+  ].team;
   // conductor player should never get this move, but...
   if ( curTeam === 'conductor' || !curTeam) {
     return INVALID_MOVE;
@@ -81,12 +81,15 @@ const endIf: PhaseConfig<State>['endIf'] = (G, ctx) => {
   if (!G.teams.conductor.player) {
     return false;
   }
-  for ( const player of G.players) {
-    if (player.team === 'conductor') {
-      continue;
-    }
-    if (!player.rolesDone) {
-      return false;
+  for ( const key in G.players) {
+    if (G.players.hasOwnProperty(key)) {
+      const player = G.players[key as PlayerID];
+      if (player.team === 'conductor') {
+        continue;
+      }
+      if (!player.rolesDone) {
+        return false;
+      }
     }
   }
   if (!teamGood(G.teams.north)) {

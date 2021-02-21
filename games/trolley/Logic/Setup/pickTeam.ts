@@ -1,14 +1,14 @@
 import {INVALID_MOVE} from 'boardgame.io/core';
-import {State, StateTeams, Ctx} from '../../types';
+import {State, StateTeams, Ctx, PlayerID} from '../../types';
 
 
 export function chooseTeam(G: State, ctx: Ctx, teamId: keyof StateTeams) {
   // Remove the player from all teams
   G.teams.north.players = G.teams.north.players.filter(
-      (player: string) => player !== ctx.playerID,
+      (player) => player !== ctx.playerID,
   );
   G.teams.south.players = G.teams.south.players.filter(
-      (player: string) => player !== ctx.playerID,
+      (player) => player !== ctx.playerID,
   );
   if ( G.teams.conductor.player === ctx.playerID ) {
     G.teams.conductor.player = null;
@@ -31,9 +31,12 @@ export function toggleDone(G: State, ctx: Ctx) {
   }
   curPlayer.teamsDone = !curPlayer.teamsDone;
 
-  for (const player of G.players) {
-    if (!player.teamsDone) {
-      return;
+  for (const key in G.players) {
+    if (G.players.hasOwnProperty(key)) {
+      const player = G.players[key as PlayerID];
+      if (!player.teamsDone) {
+        return;
+      }
     }
   }
   if (G.teams.north.players.length === 0 ) {

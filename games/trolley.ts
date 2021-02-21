@@ -2,7 +2,7 @@
 import {PlayerView, INVALID_MOVE} from 'boardgame.io/core';
 import {Game} from 'boardgame.io';
 
-import {State} from './trolley/types';
+import {State, PlayerID} from './trolley/types';
 
 import * as PickTeam from './trolley/Logic/Setup/pickTeam';
 import * as PickRole from './trolley/Logic/Setup/pickRole';
@@ -26,9 +26,10 @@ export const TrolleyGame : LobbyGame = {
     }
     const numPlayers = ctx.numPlayers;
     // Populate the players field based on the number of players
-    const players: State['players'] = {};
+    const players: Partial<State['players']> = {};
     for ( let i = 0; i < numPlayers; ++i ) {
-      players[''+i] = {
+      // Tell typescript we're SURE we're only producing valid playerIDs
+      players[''+i as PlayerID] = {
         name: null,
         score: 0,
         team: null,
@@ -48,7 +49,7 @@ export const TrolleyGame : LobbyGame = {
           modifier: ctx.random.Shuffle(modifier), // eslint-disable-line new-cap
         },
       },
-      players,
+      players: players as State['players'], // The Partial is now filled out
       teams: {
         north: {
           players: [],

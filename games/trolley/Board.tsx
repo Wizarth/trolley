@@ -3,6 +3,7 @@ import React, {FunctionComponent} from 'react';
 import TeamPicker from './Components/TeamPicker';
 import RolePicker from './Components/RolePicker';
 import {State, BoardProps} from './types';
+import Image from 'next/image';
 
 const TrolleyGameBoard: FunctionComponent<BoardProps<State>> = (
     {
@@ -60,7 +61,7 @@ const TrolleyGameBoard: FunctionComponent<BoardProps<State>> = (
   }
   elementList.push(
       <div key="board">
-        <img src='/trolley/board.png' alt='Trolley tracks' />
+        <Image src='/trolley/board.png' alt='Trolley tracks' height={562} width={520} />
       </div>,
   );
   return (

@@ -22,7 +22,7 @@ export function useUserName(): UserNameContextData {
   const [userName, setUserNameState] = useState('Visitor');
   const [cookies, setCookie] = useCookies(['username']);
 
-  if (cookies.username !== userName) {
+  if (cookies.username && cookies.username !== userName) {
     setUserNameState(cookies.username);
   }
 

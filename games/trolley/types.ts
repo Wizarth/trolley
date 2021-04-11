@@ -49,9 +49,9 @@ export interface State {
 }
 
 export interface StateDecks {
-  innocent: Card[];
-  guilty: Card[];
-  modifier: Card[];
+  innocent: InnocentCard[];
+  guilty: GuiltyCard[];
+  modifier: ModifierCard[];
 }
 
 export interface StateSecrets {
@@ -61,9 +61,9 @@ export interface StateSecrets {
 export interface Player {
   name: string|null;
   score: number;
-  innocentHand: Card[]|null;
-  guiltyHand: Card[]|null;
-  modifierHand: Card[]|null;
+  innocentHand: InnocentCard[]|null;
+  guiltyHand: GuiltyCard[]|null;
+  modifierHand: ModifierCard[]|null;
   team: keyof StateTeams|null;
   teamsDone: boolean;
   rolesDone: boolean;
@@ -90,6 +90,21 @@ export interface TrolleyTeam {
   player: PlayerID|null;
 }
 
+export type DeckType = 'innocent'|'guilty'|'modifier';
+
 export interface Card {
+  deck: DeckType;
   text: string;
+}
+
+export interface InnocentCard extends Card {
+  deck: 'innocent';
+}
+
+export interface GuiltyCard extends Card {
+  deck: 'guilty';
+}
+
+export interface ModifierCard extends Card {
+  deck: 'modifier';
 }

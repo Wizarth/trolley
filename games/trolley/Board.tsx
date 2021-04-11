@@ -5,6 +5,8 @@ import RolePicker from './Components/RolePicker';
 import {State, BoardProps} from './types';
 import Image from 'next/image';
 
+const boardHeight = 520;
+
 const TrolleyGameBoard: FunctionComponent<BoardProps<State>> = (
     {
       playerID,
@@ -59,9 +61,34 @@ const TrolleyGameBoard: FunctionComponent<BoardProps<State>> = (
         );
     }
   }
+  const northTrack = <div className={styles.northTrack}>
+    {
+      G.northTrack.map(
+          (card, key) => {
+            const src = `/trolley/${card.deck}/${card.text}.png`;
+            return <Image key={key} src={src} alt={card.text} width={300} height={boardHeight/2}/>;
+          },
+      )
+    }
+  </div>;
+  const southTrack = <div className={styles.southTrack}>
+    {
+      G.southTrack.map(
+          (card, key) => {
+            const src = `/trolley/${card.deck}/${card.text}.png`;
+            return <Image key={key} src={src} alt={card.text} width={300} height={boardHeight/2}/>;
+          },
+      )
+    }
+  </div>;
+
   elementList.push(
       <div key="board">
-        <Image src='/trolley/board.png' alt='Trolley tracks' height={562} width={520} />
+        <div className={styles.trackStart}>
+          <Image src='/trolley/board.png' alt='Trolley tracks' height={boardHeight} width={520} />
+        </div>
+        {northTrack}
+        {southTrack}
       </div>,
   );
   return (

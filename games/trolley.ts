@@ -2,15 +2,19 @@
 import {PlayerView, INVALID_MOVE} from 'boardgame.io/core';
 import {Game} from 'boardgame.io';
 
-import {State, Ctx, PlayerID} from './trolley/types';
+import {State, Ctx, PlayerID, InnocentCard, GuiltyCard, ModifierCard} from './trolley/types';
 
 import * as PickTeam from './trolley/Logic/Setup/pickTeam';
 import * as PickRole from './trolley/Logic/Setup/pickRole';
 import * as Main from './trolley/Logic/main';
 
-import guilty from './trolley/Logic/Decks/guilty.json';
-import innocent from './trolley/Logic/Decks/innocent.json';
-import modifier from './trolley/Logic/Decks/modifier.json';
+// resolveJsonModule detects that 'deck' is a string, but doesn't detect it's always 'guilty'
+import guiltyJSON from './trolley/Logic/Decks/guilty.json';
+const guiltyCards = guiltyJSON as GuiltyCard[];
+import innocentJSON from './trolley/Logic/Decks/innocent.json';
+const innocentCards = innocentJSON as InnocentCard[];
+import modifierJSON from './trolley/Logic/Decks/modifier.json';
+const modifierCards = modifierJSON as ModifierCard[];
 
 // TODO: minPlayers isn't doc'ed in Game, it's Lobby plugin specific?
 // Provide our overridden Ctx to get improved playerID property.
@@ -30,7 +34,8 @@ export const TrolleyGame : LobbyGame = {
     const players: Partial<State['players']> = {};
     for ( let i = 0; i < numPlayers; ++i ) {
       // Tell typescript we're SURE we're only producing valid playerIDs
-      players[''+i as PlayerID] = {
+      const playerID = ''+i as PlayerID;
+      players[playerID] = {
         name: null,
         score: 0,
         team: null,
@@ -45,9 +50,9 @@ export const TrolleyGame : LobbyGame = {
     return {
       secret: {
         decks: {
-          innocent: ctx.random.Shuffle(innocent), // eslint-disable-line new-cap
-          guilty: ctx.random.Shuffle(guilty), // eslint-disable-line new-cap
-          modifier: ctx.random.Shuffle(modifier), // eslint-disable-line new-cap
+          innocent: ctx.random.Shuffle(innocentCards), // eslint-disable-line new-cap
+          guilty: ctx.random.Shuffle(guiltyCards), // eslint-disable-line new-cap
+          modifier: ctx.random.Shuffle(modifierCards), // eslint-disable-line new-cap
         },
       },
       players: players as State['players'], // The Partial is now filled out
@@ -107,6 +112,30 @@ export const TrolleyGame : LobbyGame = {
     },
     main: {
       onBegin: Main.onBegin,
+      turn: {
+        stages: {
+          playInnocent: {
+            moves: {
+              playInnocent: Main.playInnocent,
+            },
+          },
+          playGuilty: {
+            moves: {
+              playGuilty: Main.playGuilty,
+            },
+          },
+          playModifiers: {
+            moves: {
+              playModifier: Main.playModifier,
+            },
+          },
+          chooseTrack: {
+            moves: {
+              chooseTrack: Main.chooseTrack,
+            },
+          },
+        },
+      },
     },
   },
   // Disable for development

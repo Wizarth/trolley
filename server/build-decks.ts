@@ -1,7 +1,7 @@
 import * as path from 'path';
 import {readdir, PathLike, writeFile} from 'fs';
 
-import {Card} from '../games/trolley/types';
+import {Card, DeckType} from '../games/trolley/types';
 
 function readdirAsync(dirPath: PathLike): Promise<string[]> {
   return new Promise<string[]>((resolve, reject) => {
@@ -25,14 +25,14 @@ function writeFileAsync(path: string, data: string) : Promise<void> {
   });
 }
 
-function convertToDeck(files: string[]): Card[] {
+function convertToDeck(files: string[], deck: DeckType): Card[] {
   files.filter(
       (fileName) => fileName.toLowerCase().endsWith('.png'),
   );
   return files.map(
       (fileName) => {
         const text = path.basename(fileName, '.png');
-        return {text};
+        return {text, deck};
       },
   );
 }
@@ -48,9 +48,9 @@ async function main() {
   const innocentFiles = await readdirAsync(innocentPath);
   const modifierFiles = await readdirAsync(modifierPath);
 
-  const guiltyDeck = convertToDeck(guiltyFiles);
-  const innocentDeck = convertToDeck(innocentFiles);
-  const modifierDeck = convertToDeck(modifierFiles);
+  const guiltyDeck = convertToDeck(guiltyFiles, 'guilty');
+  const innocentDeck = convertToDeck(innocentFiles, 'innocent');
+  const modifierDeck = convertToDeck(modifierFiles, 'modifier');
 
   console.log(guiltyDeck);
 

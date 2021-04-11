@@ -98,9 +98,8 @@ const endIf: PhaseConfig<State>['endIf'] = (G, ctx) => {
   if (!teamGood(G.teams.south)) {
     return false;
   }
-  return {
-    next: G.teams.north.players[0],
-  };
+  // Go to next phase
+  return true;
 };
 
 export {endIf};

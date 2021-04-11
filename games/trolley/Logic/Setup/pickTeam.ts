@@ -1,6 +1,6 @@
 import {INVALID_MOVE} from 'boardgame.io/core';
 import {State, StateTeams, Ctx, PlayerID} from '../../types';
-
+import {allButConductor} from '../choosePlayers';
 
 export function chooseTeam(G: State, ctx: Ctx, teamId: keyof StateTeams) {
   // Remove the player from all teams
@@ -48,17 +48,12 @@ export function toggleDone(G: State, ctx: Ctx) {
   if (G.teams.conductor.player === null ) {
     return;
   }
+
+  // TODO: If a team has only a single player, asign them all roles
+
   // Only players on track teams go to pick role.
   // Trolley player is all set
-  const value: {[x: string]: 'pickRole'} = {};
-  for (const playerId of G.teams.north.players) {
-    value[playerId] = 'pickRole';
-  }
-  for (const playerId of G.teams.south.players) {
-    value[playerId] = 'pickRole';
-  }
-  // TODO: If a team has only a single player, asign them all roles
-  if (ctx.events && ctx.events.setActivePlayers) {
-    ctx.events.setActivePlayers({value});
-  }
+  ctx.events?.setActivePlayers?.(
+      allButConductor(G, 'pickRole'),
+  );
 }

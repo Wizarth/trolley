@@ -5,29 +5,22 @@
   border: solid 1px black
 
 .teamListArea
-  $base-color: darkRed
-  @include board-area($base-color)
-  color: contrast($base-color, 90%)
-
-  .listElements
-    $elements-color: contrast($base-color, 10%)
-    @include board-area($elements-color)
-    display: flex
-    flex-direction: row
+  @include board-area(darkRed)
 
 .roleListArea
-  $base-color: lightBlue
-  @include board-area($base-color)
-  color: contrast($base-color, 90%)
-
-  .listElements
-    $elements-color: contrast($base-color, 10%)
-    @include board-area($elements-color)
-    display: flex
-    flex-direction: row
+  @include board-area(lightBlue)
 
 .otherArea
   @include board-area(blue)
+
+.cardPickerArea
+  &.innocent
+    @include board-area(lightBlue)
+  &.guilty
+    @include board-area(darkRed)
+  &.modifier
+    @include board-area(green)
+
 
 .team
   width: 33%

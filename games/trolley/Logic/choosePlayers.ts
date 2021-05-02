@@ -40,19 +40,19 @@ export function onlyConductor<Stage extends string>(G: State, stage: Stage) : {
   return {value};
 }
 
-export function trackTeamRole<
-  Role extends keyof TrackTeamRoles,
-  Stage extends string
->(G: State, role: Role, stage: Stage): {
+interface SetActivePlayersT<Stage extends string> {
   value: {
     /* eslint-disable-next-line no-unused-vars */
     [playerId in PlayerID]?: Stage
-  }
-} {
-  const value: {
-    /* eslint-disable-next-line no-unused-vars */
-    [playerId in PlayerID]?: Stage
-  } = {};
+  };
+  moveLimit?: number;
+};
+
+export function trackTeamRole<
+  Role extends keyof TrackTeamRoles,
+  Stage extends string
+>(G: State, role: Role, stage: Stage, moveLimit?: number): SetActivePlayersT<Stage> {
+  const value: SetActivePlayersT<Stage>['value'] = {};
   if ( role === 'modifier') {
     for ( const playerId of G.teams.north.roles.modifier ) {
       value[playerId] = stage;
@@ -68,5 +68,8 @@ export function trackTeamRole<
     value[playerID] = stage;
   }
 
-  return {value};
+  return {
+    value,
+    moveLimit,
+  };
 }

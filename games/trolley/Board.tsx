@@ -2,10 +2,12 @@ import styles from './Components/style.module.sass';
 import React, {FunctionComponent} from 'react';
 import TeamPicker from './Components/TeamPicker';
 import RolePicker from './Components/RolePicker';
+import Card from './Components/Card';
+import CardPicker from './Components/CardPicker';
 import {State, BoardProps} from './types';
 import Image from 'next/image';
 
-const boardHeight = 520;
+export const boardHeight = 520;
 
 const TrolleyGameBoard: FunctionComponent<BoardProps<State>> = (
     {
@@ -25,6 +27,7 @@ const TrolleyGameBoard: FunctionComponent<BoardProps<State>> = (
   }
 
   const elementList: JSX.Element[] = [];
+  // TODO: Redo this - componets for each phase?
   if ( ctx.phase === 'setup' ) {
     if ( ctx.activePlayers === null ) {
       throw new Error('in setup phase and activePlayers null');
@@ -60,13 +63,58 @@ const TrolleyGameBoard: FunctionComponent<BoardProps<State>> = (
             <h1 key="wait">Please wait for other players...</h1>,
         );
     }
+  } else if ( ctx.phase === 'main') {
+    if ( ctx.activePlayers === null ) {
+      throw new Error('in main phase and activePlayers null');
+    }
+    switch ( ctx.activePlayers[playerID] ) {
+      case 'playInnocent': {
+        const innocentHand = G.players[playerID].innocentHand;
+        if (innocentHand) {
+          elementList.push(
+              <CardPicker key="playInnocent" hand={innocentHand} deck='innocent' callback={moves.playInnocent}/>,
+          );
+        } else {
+          throw new Error('playInnocent with no innocentHand');
+        }
+        break;
+      }
+      case 'playGuilty': {
+        const guiltyHand = G.players[playerID].guiltyHand;
+        if (guiltyHand) {
+          elementList.push(
+              <CardPicker key="playInnocent" hand={guiltyHand} deck='guilty' callback={moves.playGuilty}/>,
+          );
+        } else {
+          throw new Error('playGuilty with no guiltyHand');
+        }
+        break;
+      }
+      case 'playModifier': {
+        const modifierHand = G.players[playerID].modifierHand;
+        if (modifierHand) {
+          elementList.push(
+              <CardPicker key="playInnocent" hand={modifierHand} deck='modifier' callback={moves.playModifier} />,
+          );
+        } else {
+          throw new Error('playGuilty with no guiltyHand');
+        }
+        break;
+      }
+      case 'chooseTrak':
+        elementList.push(<div>TODO: Pick track?</div>);
+        break;
+      default:
+        elementList.push(
+            <h1 key="wait">Please wait for other players...</h1>,
+        );
+    }
   }
   const northTrack = <div className={styles.northTrack}>
     {
       G.northTrack.map(
           (card, key) => {
-            const src = `/trolley/${card.deck}/${card.text}.png`;
-            return <Image key={key} src={src} alt={card.text} width={300} height={boardHeight/2}/>;
+            return <Card key={key} card={card} />;
           },
       )
     }
@@ -75,8 +123,7 @@ const TrolleyGameBoard: FunctionComponent<BoardProps<State>> = (
     {
       G.southTrack.map(
           (card, key) => {
-            const src = `/trolley/${card.deck}/${card.text}.png`;
-            return <Image key={key} src={src} alt={card.text} width={300} height={boardHeight/2}/>;
+            return <Card key={key} card={card} />;
           },
       )
     }

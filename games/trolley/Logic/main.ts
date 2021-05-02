@@ -1,5 +1,6 @@
 import {Ctx} from 'boardgame.io';
-import {State, TrackTeam, Card} from '../types';
+import {INVALID_MOVE} from 'boardgame.io/core';
+import {State, TrackTeam, Card, PlayerID, DeckType} from '../types';
 import {onlyConductor, trackTeamRole} from './choosePlayers';
 
 function prepTeam(G: State, team:TrackTeam ) {
@@ -46,36 +47,112 @@ export function onBegin(G: State, ctx: Ctx) {
   prepTracks(G);
 
   ctx.events?.setActivePlayers?.(
-      trackTeamRole(G, 'innocent', 'playInnocent'),
+      trackTeamRole(G, 'innocent', 'playInnocent', 1),
   );
 }
 
-export function playInnocent(G: State, ctx: Ctx, card: Card) {
-  // TODO: Detect which team the innocent player is on
-  // Push the card onto the board
+function playCard<CardT extends Card>(G: State, playerID: PlayerID, hand: CardT[], cardIndex: number, role: DeckType) {
+  if (-1 === cardIndex || cardIndex >= hand.length) {
+    return INVALID_MOVE;
+  }
 
-  ctx.events?.setActivePlayers?.(
-      trackTeamRole(G, 'guilty', 'playGuilty'),
-  );
+  let track: Card[]|null = null;
+  if ( G.players[playerID].team === 'north') {
+    track = G.northTrack;
+  } else if ( G.players[playerID].team === 'south') {
+    track = G.southTrack;
+  }
+  if (track) {
+    const splicedCards = hand.splice(cardIndex, 1) as [CardT];
+    track.push(splicedCards[0]);
+  } else {
+    return INVALID_MOVE;
+  }
 }
 
-export function playGuilty(G: State, ctx: Ctx, card: Card) {
-  // TODO: Detect which team the guilty player is on
-  // Push the card onto the board
+export function playInnocent(G: State, ctx: Ctx, cardIndex: number) {
+  const playerID = ctx.playerID as PlayerID;
+  const innocentHand = G.players[playerID].innocentHand;
+  if (!innocentHand) {
+    return INVALID_MOVE;
+  }
 
-  ctx.events?.setActivePlayers?.(
-      trackTeamRole(G, 'guilty', 'playGuilty'),
+  const move = playCard(
+      G,
+      playerID,
+      innocentHand,
+      cardIndex,
+      'innocent',
   );
+  if ( move === INVALID_MOVE ) {
+    return INVALID_MOVE;
+  }
+
+  // Only trigger this when both teams have played
+  // Easiest test is to check length of tracks
+  if (G.northTrack.length === G.southTrack.length ) {
+    ctx.events?.setActivePlayers?.(
+        trackTeamRole(G, 'guilty', 'playGuilty', 1),
+    );
+  }
 }
 
-export function playModifier(G: State, ctx: Ctx, card: Card) {
+export function playGuilty(G: State, ctx: Ctx, cardIndex: number) {
+  const playerID = ctx.playerID as PlayerID;
+  const guiltyHand = G.players[playerID].guiltyHand;
+  if (!guiltyHand) {
+    return INVALID_MOVE;
+  }
+
+  const move = playCard(
+      G,
+      playerID,
+      guiltyHand,
+      cardIndex,
+      'guilty',
+  );
+  if ( move === INVALID_MOVE ) {
+    return INVALID_MOVE;
+  }
+
+  // Only trigger this when both teams have played
+  // Easiest test is to check length of tracks
+  if (G.northTrack.length === G.southTrack.length ) {
+    ctx.events?.setActivePlayers?.(
+        trackTeamRole(G, 'modifier', 'playModifier', 1),
+    );
+  }
+}
+
+export function playModifier(G: State, ctx: Ctx, cardIndex: number) {
   // TODO: Deal with choosing WHERE the innocent card should be played
   // North 0, 1, 2
   // South 0, 1, 2
 
-  ctx.events?.setActivePlayers?.(
-      onlyConductor(G, 'chooseTrack'),
+  const playerID = ctx.playerID as PlayerID;
+  const modifierHand = G.players[playerID].modifierHand;
+  if (!modifierHand) {
+    return INVALID_MOVE;
+  }
+
+  const move = playCard(
+      G,
+      playerID,
+      modifierHand,
+      cardIndex,
+      'modifier',
   );
+  if ( move === INVALID_MOVE ) {
+    return INVALID_MOVE;
+  }
+
+  // Only trigger this when both teams have played
+  // Easiest test is to check length of tracks
+  if (G.northTrack.length === G.southTrack.length ) {
+    ctx.events?.setActivePlayers?.(
+        onlyConductor(G, 'chooseTrack'),
+    );
+  }
 }
 
 export function chooseTrack(G: State, ctx: Ctx, track: 'north'|'south') {

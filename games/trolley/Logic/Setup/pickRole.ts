@@ -3,8 +3,12 @@ import {INVALID_MOVE} from 'boardgame.io/core';
 import {State, TrackTeam, TrackTeamRoles, Ctx, PlayerID} from '../../types';
 
 export function joinRole(G: State, ctx: Ctx, roleId: keyof TrackTeamRoles) {
+  const playerID = ctx.playerID;
+  if (!playerID) {
+    return INVALID_MOVE;
+  }
   const curTeam = G.players[
-      ctx.playerID
+      playerID
   ].team;
   // conductor player should never get this move, but...
   if ( curTeam === 'conductor' || !curTeam) {
@@ -14,19 +18,23 @@ export function joinRole(G: State, ctx: Ctx, roleId: keyof TrackTeamRoles) {
 
   switch (roleId) {
     case 'innocent':
-      team.roles.innocent = ctx.playerID;
+      team.roles.innocent = playerID;
       break;
     case 'guilty':
-      team.roles.guilty = ctx.playerID;
+      team.roles.guilty = playerID;
       break;
     case 'modifier':
-      team.roles.modifier.push(ctx.playerID);
+      team.roles.modifier.push(playerID);
   }
 }
 
 export function leaveRole(G: State, ctx: Ctx, roleId: keyof TrackTeamRoles) {
+  const playerID = ctx.playerID;
+  if (!playerID) {
+    return INVALID_MOVE;
+  }
   const curTeam = G.players[
-      ctx.playerID
+      playerID
   ].team;
   // conductor player should never get this move, but...
   if ( curTeam === 'conductor' || !curTeam) {
@@ -36,20 +44,20 @@ export function leaveRole(G: State, ctx: Ctx, roleId: keyof TrackTeamRoles) {
 
   switch (roleId) {
     case 'innocent':
-      if (team.roles.innocent !== ctx.playerID) {
+      if (team.roles.innocent !== playerID) {
         return INVALID_MOVE;
       }
       team.roles.innocent = null;
       break;
     case 'guilty':
-      if (team.roles.guilty !== ctx.playerID) {
+      if (team.roles.guilty !== playerID) {
         return INVALID_MOVE;
       }
       team.roles.guilty = null;
       break;
     case 'modifier':
       const rolePlayers = team.roles.modifier;
-      const playerIndex = rolePlayers.indexOf(ctx.playerID);
+      const playerIndex = rolePlayers.indexOf(playerID);
       if (playerIndex===-1) {
         return INVALID_MOVE;
       }
@@ -59,8 +67,12 @@ export function leaveRole(G: State, ctx: Ctx, roleId: keyof TrackTeamRoles) {
 }
 
 export function toggleDone(G: State, ctx: Ctx) {
+  const playerID = ctx.playerID;
+  if (!playerID) {
+    return INVALID_MOVE;
+  }
   const curPlayer = G.players[
-      ctx.playerID
+      playerID
   ];
   // conductor player should never get this move, but...
   if ( curPlayer.team === 'conductor' ) {

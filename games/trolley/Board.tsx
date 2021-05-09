@@ -28,88 +28,94 @@ const TrolleyGameBoard: FunctionComponent<BoardProps<State>> = (
 
   const elementList: JSX.Element[] = [];
   // TODO: Redo this - componets for each phase?
-  if ( ctx.phase === 'setup' ) {
-    if ( ctx.activePlayers === null ) {
-      throw new Error('in setup phase and activePlayers null');
-    }
-    switch ( ctx.activePlayers[playerID] ) {
-      case 'pickTeam':
-        elementList.push(
-            <TeamPicker key="teamPicker"
-              teams={G.teams}
-              player={interactingPlayer}
-              playerId={playerID}
-              onJoinTeam={onJoinTeam}
-              onDone={moves.toggleDone}
-            />,
-        );
-        break;
-      case 'pickRole':
-        const curTeam = interactingPlayer.team;
-        if (curTeam === 'north' || curTeam === 'south') {
+  switch ( ctx.phase ) {
+    case 'setup': {
+      if ( ctx.activePlayers === null ) {
+        throw new Error('in setup phase and activePlayers null');
+      }
+      switch ( ctx.activePlayers[playerID] ) {
+        case 'pickTeam':
           elementList.push(
-              <RolePicker key="rolePicker"
-                team={G.teams[curTeam]}
+              <TeamPicker key="teamPicker"
+                teams={G.teams}
                 player={interactingPlayer}
-                onJoinRole={moves.joinRole}
-                onLeaveRole={moves.leaveRole}
+                playerId={playerID}
+                onJoinTeam={onJoinTeam}
                 onDone={moves.toggleDone}
               />,
           );
-        }
-        break;
-      default:
+          break;
+        case 'pickRole':
+          const curTeam = interactingPlayer.team;
+          if (curTeam === 'north' || curTeam === 'south') {
+            elementList.push(
+                <RolePicker key="rolePicker"
+                  team={G.teams[curTeam]}
+                  player={interactingPlayer}
+                  onJoinRole={moves.joinRole}
+                  onLeaveRole={moves.leaveRole}
+                  onDone={moves.toggleDone}
+                />,
+            );
+          }
+          break;
+        default:
+          elementList.push(
+              <h1 key="wait">Please wait for other players...</h1>,
+          );
+      };
+      break;
+    };
+    case 'playInnocent': {
+      const innocentHand = G.players[playerID].innocentHand;
+      if (innocentHand) {
+        elementList.push(
+            <CardPicker key="playInnocent" hand={innocentHand} deck='innocent' callback={moves.chooseCard} cardChosen={G.players[playerID].cardChosen}/>,
+        );
+      } else {
         elementList.push(
             <h1 key="wait">Please wait for other players...</h1>,
         );
+      }
+      break;
     }
-  } else if ( ctx.phase === 'main') {
-    if ( ctx.activePlayers === null ) {
-      throw new Error('in main phase and activePlayers null');
-    }
-    switch ( ctx.activePlayers[playerID] ) {
-      case 'playInnocent': {
-        const innocentHand = G.players[playerID].innocentHand;
-        if (innocentHand) {
-          elementList.push(
-              <CardPicker key="playInnocent" hand={innocentHand} deck='innocent' callback={moves.playInnocent}/>,
-          );
-        } else {
-          throw new Error('playInnocent with no innocentHand');
-        }
-        break;
-      }
-      case 'playGuilty': {
-        const guiltyHand = G.players[playerID].guiltyHand;
-        if (guiltyHand) {
-          elementList.push(
-              <CardPicker key="playInnocent" hand={guiltyHand} deck='guilty' callback={moves.playGuilty}/>,
-          );
-        } else {
-          throw new Error('playGuilty with no guiltyHand');
-        }
-        break;
-      }
-      case 'playModifier': {
-        const modifierHand = G.players[playerID].modifierHand;
-        if (modifierHand) {
-          elementList.push(
-              <CardPicker key="playInnocent" hand={modifierHand} deck='modifier' callback={moves.playModifier} />,
-          );
-        } else {
-          throw new Error('playGuilty with no guiltyHand');
-        }
-        break;
-      }
-      case 'chooseTrak':
-        elementList.push(<div>TODO: Pick track?</div>);
-        break;
-      default:
+    case 'playGuilty': {
+      const guiltyHand = G.players[playerID].guiltyHand;
+      if (guiltyHand) {
+        elementList.push(
+            <CardPicker key="playInnocent" hand={guiltyHand} deck='guilty' callback={moves.chooseCard} cardChosen={G.players[playerID].cardChosen}/>,
+        );
+      } else {
         elementList.push(
             <h1 key="wait">Please wait for other players...</h1>,
         );
+      }
+      break;
+    }
+    case 'playModifier': {
+      const modifierHand = G.players[playerID].modifierHand;
+      if (modifierHand) {
+        elementList.push(
+            <CardPicker key="playInnocent" hand={modifierHand} deck='modifier' callback={moves.chooseCard} cardChosen={G.players[playerID].cardChosen}/>,
+        );
+      } else {
+        elementList.push(
+            <h1 key="wait">Please wait for other players...</h1>,
+        );
+      }
+      break;
+    }
+    case 'chooseTrack': {
+      elementList.push(<div>TODO: Pick track?</div>);
+      break;
+    }
+    default: {
+      elementList.push(
+          <h1 key="wait">Please wait for other players...</h1>,
+      );
     }
   }
+
   const northTrack = <div className={styles.northTrack}>
     {
       G.northTrack.map(

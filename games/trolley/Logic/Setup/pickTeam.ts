@@ -3,29 +3,37 @@ import {State, StateTeams, Ctx, PlayerID} from '../../types';
 import {allButConductor} from '../choosePlayers';
 
 export function chooseTeam(G: State, ctx: Ctx, teamId: keyof StateTeams) {
+  const playerID = ctx.playerID;
+  if (!playerID) {
+    return INVALID_MOVE;
+  }
   // Remove the player from all teams
   G.teams.north.players = G.teams.north.players.filter(
-      (player) => player !== ctx.playerID,
+      (player) => player !== playerID,
   );
   G.teams.south.players = G.teams.south.players.filter(
-      (player) => player !== ctx.playerID,
+      (player) => player !== playerID,
   );
-  if ( G.teams.conductor.player === ctx.playerID ) {
+  if ( G.teams.conductor.player === playerID ) {
     G.teams.conductor.player = null;
   }
   // Add the player to the specified team
   if ( teamId === 'north' || teamId === 'south') {
-    G.teams[teamId].players.push(ctx.playerID);
+    G.teams[teamId].players.push(playerID);
   } else {
-    G.teams[teamId].player = ctx.playerID;
+    G.teams[teamId].player = playerID;
   }
-  const curPlayer = G.players[ctx.playerID];
+  const curPlayer = G.players[playerID];
   curPlayer.team = teamId;
   curPlayer.teamsDone = false;
 }
 
 export function toggleDone(G: State, ctx: Ctx) {
-  const curPlayer = G.players[ctx.playerID];
+  const playerID = ctx.playerID;
+  if (!playerID) {
+    return INVALID_MOVE;
+  }
+  const curPlayer = G.players[playerID];
   if (!curPlayer.team) {
     return INVALID_MOVE;
   }

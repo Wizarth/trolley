@@ -29,6 +29,6 @@ export async function getGame(gameName: string, matchID: string): Promise<MatchP
   }
   const game = await response.json() as MatchProps;
 
-  console.log(JSON.stringify(game));
+  // console.log(JSON.stringify(game));
   return game;
 }

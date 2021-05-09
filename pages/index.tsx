@@ -1,3 +1,4 @@
+import type {Game} from 'boardgame.io';
 import {Lobby} from 'boardgame.io/react';
 import React, {FunctionComponent, useState, useEffect} from 'react';
 import Spinner from 'react-spinner';
@@ -18,7 +19,7 @@ const Index: FunctionComponent<void> = () => {
   if (!server) {
     return (<Spinner/>);
   } else {
-    const importedGames = [{game: TrolleyGame, board: TrolleyGameBoard}];
+    const importedGames = [{game: TrolleyGame as Game, board: TrolleyGameBoard}];
 
     return (
       <div>

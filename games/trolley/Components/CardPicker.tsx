@@ -10,13 +10,25 @@ type ParamsT = {
   hand: CardT[];
   deck: DeckType;
   callback: (cardIndex: number) => void;
+  cardChosen: null|number;
 }
 
-export default function CardPicker({hand, deck, callback}: ParamsT) {
+export default function CardPicker({hand, deck, callback, cardChosen}: ParamsT) {
   const cards = hand.map(
-      (card, key) => <button key={key} onClick={()=>callback(key)}>
-        <Card card={card} />
-      </button>,
+      (card, key) => {
+        if (cardChosen === null) {
+          return <button key={key} onClick={()=>callback(key)}>
+            <Card card={card} />
+          </button>;
+        } else {
+          if ( key === cardChosen ) {
+            // TODO: Make this card bold or something
+            return <Card card={card} scaling={1.2} />;
+          } else {
+            return <Card card={card} />;
+          }
+        }
+      },
   );
   return <BoardArea className={`${styles.cardPickerArea} ${styles[deck]}`} styles={styles}>
     {cards}

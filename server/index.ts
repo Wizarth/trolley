@@ -6,6 +6,7 @@ const dev = process.env.NODE_ENV !== 'production';
 const app = next({dev});
 const handle = app.getRequestHandler();
 
+import {Game} from 'boardgame.io';
 import {Server} from 'boardgame.io/server';
 import {TrolleyGame} from '../games/trolley';
 
@@ -19,7 +20,7 @@ app.prepare().then(() => {
   */
   // eslint-disable-next-line new-cap
   const gameServer = Server({
-    games: [TrolleyGame],
+    games: [TrolleyGame as Game],
   });
 
   const server = gameServer.app;

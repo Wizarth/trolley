@@ -6,7 +6,10 @@ import {State, Ctx, PlayerID, InnocentCard, GuiltyCard, ModifierCard} from './tr
 
 import * as PickTeam from './trolley/Logic/Setup/pickTeam';
 import * as PickRole from './trolley/Logic/Setup/pickRole';
-import * as Main from './trolley/Logic/main';
+
+import playInnocent from './trolley/Phases/playInnocent';
+import playGuilty from './trolley/Phases/playGuilty';
+import playModifier from './trolley/Phases/playModifier';
 
 // resolveJsonModule detects that 'deck' is a string, but doesn't detect it's always 'guilty'
 import guiltyJSON from './trolley/Logic/Decks/guilty.json';
@@ -44,6 +47,7 @@ export const TrolleyGame : LobbyGame = {
         modifierHand: null,
         teamsDone: false,
         rolesDone: false,
+        cardChosen: null,
       };
     }
 
@@ -108,35 +112,12 @@ export const TrolleyGame : LobbyGame = {
         },
       },
       endIf: PickRole.endIf,
-      next: 'main',
+      next: 'playInnocent',
     },
-    main: {
-      onBegin: Main.onBegin,
-      turn: {
-        stages: {
-          playInnocent: {
-            moves: {
-              playInnocent: Main.playInnocent,
-            },
-          },
-          playGuilty: {
-            moves: {
-              playGuilty: Main.playGuilty,
-            },
-          },
-          playModifiers: {
-            moves: {
-              playModifier: Main.playModifier,
-            },
-          },
-          chooseTrack: {
-            moves: {
-              chooseTrack: Main.chooseTrack,
-            },
-          },
-        },
-      },
-    },
+    playInnocent,
+    playGuilty,
+    playModifier,
+    chooseTrack: {},
   },
   // Disable for development
   // TODO: Replace with something that only strips hand from players

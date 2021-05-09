@@ -9,7 +9,7 @@ import {BoardProps as BaseBoardProps} from 'boardgame.io/react';
 export type PlayerID = '0'|'1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9'|'10'|'11'|'12'|'13'|'14'|'15';
 
 export interface Ctx extends Omit<BaseCtx, 'playerID'> {
-  playerID: PlayerID;
+  playerID: PlayerID|undefined;
 }
 
 export interface BoardProps<T> extends Omit<BaseBoardProps<T>, 'playerID'> {
@@ -21,7 +21,7 @@ export interface BoardProps<T> extends Omit<BaseBoardProps<T>, 'playerID'> {
   I can't work out a way to clarify that this is somehow based on the number of players,
   so I'm going to say they all exist, and assume we won't be silly
 */
-export interface Players {
+export type Players = Record<PlayerID, Player>; /*
   '0': Player;
   '1': Player;
   '2': Player;
@@ -38,7 +38,7 @@ export interface Players {
   '13': Player;
   '14': Player;
   '15': Player;
-}
+}*/
 
 export interface State {
   secret?: StateSecrets;
@@ -67,6 +67,8 @@ export interface Player {
   team: keyof StateTeams|null;
   teamsDone: boolean;
   rolesDone: boolean;
+  // Used when selecting a card to be played simultaneously at the end of a phase.
+  cardChosen: null|number;
 }
 
 export interface StateTeams {
